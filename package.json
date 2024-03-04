@@ -1,0 +1,30 @@
+{
+  "name": "cobranca",
+  "version": "1.0.0",
+  "description": "api",
+  "main": "src/index.js",
+  "author": "adriano",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "esm": "^3.2.25",
+    "express": "^4.18.2",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^15.0.0 || ^16.0.0 ",
+    "eslint-plugin-promise": "^6.0.0",
+    "nodemon": "^3.0.3",
+    "typescript": "*"
+  },
+  "scripts": {
+    "start": " nodemon src/index.js"
+  }
+}
