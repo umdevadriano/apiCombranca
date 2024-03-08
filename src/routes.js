@@ -14,6 +14,8 @@ router.get(
 router.get('/clientes/:id', clienteController.show)
 router.delete('/clientes/:id', clienteController.delete)
 router.post ('/clientes', clienteController.store)
+router.put ('/clientes/:id', clienteController.update)
+
 
 
 export default router;

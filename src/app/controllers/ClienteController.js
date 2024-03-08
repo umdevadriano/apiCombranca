@@ -4,7 +4,6 @@ import sqlite3 from 'sqlite3';
 const clienteRepository = new ClienteRepository()
 const db = new sqlite3.Database('./mydb.sqlite');
 
-// db.run(`ALTER TABLE clientes ADD COLUMN name text; ()`);
 db.run(`CREATE TABLE IF NOT EXISTS clientes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT,
@@ -14,10 +13,9 @@ db.run(`CREATE TABLE IF NOT EXISTS clientes (
 
 
 export  class ClienteController {
- async index(req,res){
-    // const clientes = await clienteRepository.findAll()
-    //listar todos registros
-    // res.json(clientes)
+
+  //listar clientes
+  async index(req,res){
     const sql = 'SELECT * FROM clientes';
     db.all(sql, (err, row) => {
       if (err) {
@@ -26,39 +24,51 @@ export  class ClienteController {
       res.json(row);
     });
   }
-  async show(req,res){
-  //obter  um registro
-  const id = req.params.id
-  const cliente = await clienteRepository.findById(id)
-      if(!cliente){
-        return res.status(404).json({message:`cliente não encontrado id = ${id}`})
-      }else{
-        res.send(cliente );
-      }
-  }
-  store(req, res){
-  //criar  um novo registro
-  const { name, email,telefone } = req.body;
-  const sql = 'INSERT INTO clientes (name, email,telefone) VALUES (?,?,?)';
-  db.run(sql, [name, email, telefone], function(err) {
-    if (err) {
-      return res.status(400).json({ error: err.message });
-    }
-    res.json({ id: this.lastID });
-  });
 
+  //obter  um registro
+  async show(req,res){
+    const sql = 'SELECT * FROM clientes WHERE id = ?';
+    db.get(sql, [req.params.id], (err, row) => {
+      if (err) {
+        return res.status(400).json({ error: err.message });
+      }
+      res.json(row);
+    });
+ 
   }
-  update(){
+  
+  //criar  um novo registro
+  store(req, res){
+    const { name, email,telefone } = req.body;
+    const sql = 'INSERT INTO clientes (name, email,telefone) VALUES (?,?,?)';
+    db.run(sql, [name, email, telefone], function(err) {
+      if (err) {
+        return res.status(400).json({ error: err.message });
+      }
+      res.json({ id: this.lastID });
+    });
+  }
+
   //editar  um  registro
-  }
-  async delete(req,res){
+  update(req, res){
+    const { name, email,telefone } = req.body;
+    const sql = 'UPDATE clientes SET name = ?, email = ? , telefone = ? WHERE id = ?';
+    db.run(sql, [name, email,telefone , req.params.id], function(err) {
+      if (err) {
+        return res.status(400).json({ error: err.message });
+      }
+      res.json({ changes: this.changes });
+    });
+  } 
+
   //deletar  um  registro
-  const id = req.params.id
-  const cliente = await clienteRepository.findById(id)
-    if(!cliente){
-      return res.status(404).json({message:`cliente não encontrado id = ${id}`})
-    }
-    await clienteRepository.delete(id)
-    res.sendStatus(204)
-   }
+  async delete(req,res){
+    const sql = 'DELETE FROM clientes WHERE id = ?';
+    db.run(sql, [req.params.id], function(err) {
+      if (err) {
+        return res.status(400).json({ error: err.message });
+      }
+      res.json({ changes: this.changes });
+    });
+  }
 }
