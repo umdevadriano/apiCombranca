@@ -1,13 +1,30 @@
 
 import {ClienteRepository} from '../repositories/ClienteRepository.js'
+import sqlite3 from 'sqlite3';
 const clienteRepository = new ClienteRepository()
+const db = new sqlite3.Database('./mydb.sqlite');
+
+// db.run(`ALTER TABLE clientes ADD COLUMN name text; ()`);
+db.run(`CREATE TABLE IF NOT EXISTS clientes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT,
+  email TEXT,
+  telefone TEXT
+)`);
 
 
 export  class ClienteController {
  async index(req,res){
-    const clientes = await clienteRepository.findAll()
+    // const clientes = await clienteRepository.findAll()
     //listar todos registros
-    res.json(clientes)
+    // res.json(clientes)
+    const sql = 'SELECT * FROM clientes';
+    db.all(sql, (err, row) => {
+      if (err) {
+        return res.status(400).json({ error: err.message });
+      }
+      res.json(row);
+    });
   }
   async show(req,res){
   //obter  um registro
@@ -19,9 +36,17 @@ export  class ClienteController {
         res.send(cliente );
       }
   }
-  store(){
+  store(req, res){
   //criar  um novo registro
-  res.send('teste get api ');
+  const { name, email,telefone } = req.body;
+  const sql = 'INSERT INTO clientes (name, email,telefone) VALUES (?,?,?)';
+  db.run(sql, [name, email, telefone], function(err) {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+    res.json({ id: this.lastID });
+  });
+
   }
   update(){
   //editar  um  registro
